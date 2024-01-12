@@ -1,0 +1,31 @@
+jobs:
+  scheduler:
+    myJob1:
+      description: ""
+      requestRecovery: true
+      storeDurably: true
+      jobClass: ""
+      jobData:
+        isDefault: true
+        instanceId: master
+      trigger:
+        name: ""
+        description: ""
+        cron: ""
+        startNow: false
+        startDate: ""
+        endDate: ""
+        calendar: ""
+
+    myJob2:
+      jobData:
+        isDefault: true
+        instanceId: child
+
+  rule:
+    myRuleJob:
+      jobData:
+        isDefault: true
+        instanceId: child-2
+
+

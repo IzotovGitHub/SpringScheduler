@@ -27,7 +27,3 @@ spring:
             threadCount: 10
             threadsInheritContextClassLoaderOfInitializingThread: true
     auto-startup: false #Выключаем автоматический старт для scheduler, т.к. запуск будет выполнен вручную
-
-scheduler:
-  groupName: PERMANENT
-  cron: "*/3 * * * * ?"

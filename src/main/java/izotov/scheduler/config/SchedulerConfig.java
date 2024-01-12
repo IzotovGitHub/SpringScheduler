@@ -1,5 +1,8 @@
 package izotov.scheduler.config;
 
+import izotov.scheduler.config.jobs.JobProperties;
+import izotov.scheduler.config.jobs.JobsConfig;
+import lombok.RequiredArgsConstructor;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +12,9 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class SchedulerConfig {
+    private final JobsConfig jobsConfig;
     
     @Bean
     public Scheduler scheduler(List<Trigger> triggers, List<JobDetail> jobDetails, SchedulerFactoryBean factory) throws SchedulerException {
@@ -23,12 +28,23 @@ public class SchedulerConfig {
     
     private void revalidateJobs(List<JobDetail> jobDetails, Scheduler scheduler) throws SchedulerException {
         List<JobKey> jobKeys = jobDetails.stream()
+                .peek(jobDetail -> {
+                    try {
+                        scheduler.addJob(jobDetail, true);
+                    } catch (SchedulerException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .map(JobDetail::getKey)
                 .toList();
-        
-        for (JobKey key : scheduler.getJobKeys(GroupMatcher.jobGroupEquals("PERMANENT"))) {
-            if (!jobKeys.contains(key)) {
-                scheduler.deleteJob(key);
+        for (JobProperties prop : jobsConfig.getJobProperties()) {
+            for (JobKey key : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(prop.jobKey().getGroup()))) {
+                if (!jobKeys.contains(key)) {
+                    JobDataMap dataMap = scheduler.getJobDetail(key).getJobDataMap();
+                    if (dataMap.containsKey("isDefault") && dataMap.getBooleanValue("isDefault")) {
+                        scheduler.deleteJob(key);
+                    }
+                }
             }
         }
     }

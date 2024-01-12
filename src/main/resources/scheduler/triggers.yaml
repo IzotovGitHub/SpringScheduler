@@ -1,0 +1,15 @@
+triggerGroups:
+  defaultTriggerGroup:
+    defaultTriggerName1:
+      cron: "*/3 * * * * ?"
+      jobName: myJob1
+      jobGroup: scheduler
+
+  ruleTriggerGroup:
+    ruleTriggerName:
+      cron: "*/3 * * * * ?"
+      forJobGroups:
+        - rule
+      forJobNames:
+        rule:
+          - myRuleJob

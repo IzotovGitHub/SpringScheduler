@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @DisallowConcurrentExecution
 @PersistJobDataAfterExecution
 @RequiredArgsConstructor
-public class ShowTimeJob extends QuartzJobBean {
+public class CommonJob extends QuartzJobBean {
     
     private final ShowTimeService showTimeService;
     
